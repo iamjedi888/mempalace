@@ -97,6 +97,7 @@ def test_spellcheck_user_text_passthrough_no_autocorrect():
 
 def test_spellcheck_user_text_with_speller():
     """When a speller is available, it corrects words."""
+
     def fake_speller(word):
         corrections = {"knoe": "know", "befor": "before"}
         return corrections.get(word, word)
@@ -111,6 +112,7 @@ def test_spellcheck_user_text_with_speller():
 
 def test_spellcheck_preserves_technical_terms():
     """Technical terms should never be touched even with a speller."""
+
     def fake_speller(word):
         return "WRONG"
 

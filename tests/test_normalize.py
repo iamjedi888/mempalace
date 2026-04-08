@@ -158,12 +158,8 @@ def test_claude_code_jsonl_non_dict_entries():
 def test_codex_jsonl_valid():
     lines = [
         json.dumps({"type": "session_meta", "payload": {}}),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "user_message", "message": "Q"}}
-        ),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "agent_message", "message": "A"}}
-        ),
+        json.dumps({"type": "event_msg", "payload": {"type": "user_message", "message": "Q"}}),
+        json.dumps({"type": "event_msg", "payload": {"type": "agent_message", "message": "A"}}),
     ]
     result = _try_codex_jsonl("\n".join(lines))
     assert result is not None
@@ -173,12 +169,8 @@ def test_codex_jsonl_valid():
 def test_codex_jsonl_no_session_meta():
     """Without session_meta, codex parser returns None."""
     lines = [
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "user_message", "message": "Q"}}
-        ),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "agent_message", "message": "A"}}
-        ),
+        json.dumps({"type": "event_msg", "payload": {"type": "user_message", "message": "Q"}}),
+        json.dumps({"type": "event_msg", "payload": {"type": "agent_message", "message": "A"}}),
     ]
     result = _try_codex_jsonl("\n".join(lines))
     assert result is None
@@ -199,15 +191,9 @@ def test_codex_jsonl_skips_non_event_msg():
 def test_codex_jsonl_non_string_message():
     lines = [
         json.dumps({"type": "session_meta"}),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "user_message", "message": 123}}
-        ),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "user_message", "message": "Q"}}
-        ),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "agent_message", "message": "A"}}
-        ),
+        json.dumps({"type": "event_msg", "payload": {"type": "user_message", "message": 123}}),
+        json.dumps({"type": "event_msg", "payload": {"type": "user_message", "message": "Q"}}),
+        json.dumps({"type": "event_msg", "payload": {"type": "agent_message", "message": "A"}}),
     ]
     result = _try_codex_jsonl("\n".join(lines))
     assert result is not None
@@ -216,15 +202,9 @@ def test_codex_jsonl_non_string_message():
 def test_codex_jsonl_empty_text_skipped():
     lines = [
         json.dumps({"type": "session_meta"}),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "user_message", "message": "  "}}
-        ),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "user_message", "message": "Q"}}
-        ),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "agent_message", "message": "A"}}
-        ),
+        json.dumps({"type": "event_msg", "payload": {"type": "user_message", "message": "  "}}),
+        json.dumps({"type": "event_msg", "payload": {"type": "user_message", "message": "Q"}}),
+        json.dumps({"type": "event_msg", "payload": {"type": "agent_message", "message": "A"}}),
     ]
     result = _try_codex_jsonl("\n".join(lines))
     assert result is not None
@@ -234,12 +214,8 @@ def test_codex_jsonl_payload_not_dict():
     lines = [
         json.dumps({"type": "session_meta"}),
         json.dumps({"type": "event_msg", "payload": "not a dict"}),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "user_message", "message": "Q"}}
-        ),
-        json.dumps(
-            {"type": "event_msg", "payload": {"type": "agent_message", "message": "A"}}
-        ),
+        json.dumps({"type": "event_msg", "payload": {"type": "user_message", "message": "Q"}}),
+        json.dumps({"type": "event_msg", "payload": {"type": "agent_message", "message": "A"}}),
     ]
     result = _try_codex_jsonl("\n".join(lines))
     assert result is not None

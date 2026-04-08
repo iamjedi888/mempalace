@@ -49,29 +49,43 @@ def _write_transcript(path: Path, entries: list[dict]):
 
 def test_count_human_messages_basic(tmp_path):
     transcript = tmp_path / "t.jsonl"
-    _write_transcript(transcript, [
-        {"message": {"role": "user", "content": "hello"}},
-        {"message": {"role": "assistant", "content": "hi"}},
-        {"message": {"role": "user", "content": "bye"}},
-    ])
+    _write_transcript(
+        transcript,
+        [
+            {"message": {"role": "user", "content": "hello"}},
+            {"message": {"role": "assistant", "content": "hi"}},
+            {"message": {"role": "user", "content": "bye"}},
+        ],
+    )
     assert _count_human_messages(str(transcript)) == 2
 
 
 def test_count_skips_command_messages(tmp_path):
     transcript = tmp_path / "t.jsonl"
-    _write_transcript(transcript, [
-        {"message": {"role": "user", "content": "<command-message>status</command-message>"}},
-        {"message": {"role": "user", "content": "real question"}},
-    ])
+    _write_transcript(
+        transcript,
+        [
+            {"message": {"role": "user", "content": "<command-message>status</command-message>"}},
+            {"message": {"role": "user", "content": "real question"}},
+        ],
+    )
     assert _count_human_messages(str(transcript)) == 1
 
 
 def test_count_handles_list_content(tmp_path):
     transcript = tmp_path / "t.jsonl"
-    _write_transcript(transcript, [
-        {"message": {"role": "user", "content": [{"type": "text", "text": "hello"}]}},
-        {"message": {"role": "user", "content": [{"type": "text", "text": "<command-message>x</command-message>"}]}},
-    ])
+    _write_transcript(
+        transcript,
+        [
+            {"message": {"role": "user", "content": [{"type": "text", "text": "hello"}]}},
+            {
+                "message": {
+                    "role": "user",
+                    "content": [{"type": "text", "text": "<command-message>x</command-message>"}],
+                }
+            },
+        ],
+    )
     assert _count_human_messages(str(transcript)) == 1
 
 
@@ -97,6 +111,7 @@ def test_count_malformed_json_lines(tmp_path):
 def _capture_hook_output(hook_fn, data, harness="claude-code", state_dir=None):
     """Run a hook and capture its JSON stdout output."""
     import io
+
     buf = io.StringIO()
     patches = [patch("mempalace.hooks_cli._output", side_effect=lambda d: buf.write(json.dumps(d)))]
     if state_dir:
@@ -130,10 +145,10 @@ def test_stop_hook_passthrough_when_active_string(tmp_path):
 
 def test_stop_hook_passthrough_below_interval(tmp_path):
     transcript = tmp_path / "t.jsonl"
-    _write_transcript(transcript, [
-        {"message": {"role": "user", "content": f"msg {i}"}}
-        for i in range(SAVE_INTERVAL - 1)
-    ])
+    _write_transcript(
+        transcript,
+        [{"message": {"role": "user", "content": f"msg {i}"}} for i in range(SAVE_INTERVAL - 1)],
+    )
     result = _capture_hook_output(
         hook_stop,
         {"session_id": "test", "stop_hook_active": False, "transcript_path": str(transcript)},
@@ -144,10 +159,10 @@ def test_stop_hook_passthrough_below_interval(tmp_path):
 
 def test_stop_hook_blocks_at_interval(tmp_path):
     transcript = tmp_path / "t.jsonl"
-    _write_transcript(transcript, [
-        {"message": {"role": "user", "content": f"msg {i}"}}
-        for i in range(SAVE_INTERVAL)
-    ])
+    _write_transcript(
+        transcript,
+        [{"message": {"role": "user", "content": f"msg {i}"}} for i in range(SAVE_INTERVAL)],
+    )
     result = _capture_hook_output(
         hook_stop,
         {"session_id": "test", "stop_hook_active": False, "transcript_path": str(transcript)},
@@ -159,10 +174,10 @@ def test_stop_hook_blocks_at_interval(tmp_path):
 
 def test_stop_hook_tracks_save_point(tmp_path):
     transcript = tmp_path / "t.jsonl"
-    _write_transcript(transcript, [
-        {"message": {"role": "user", "content": f"msg {i}"}}
-        for i in range(SAVE_INTERVAL)
-    ])
+    _write_transcript(
+        transcript,
+        [{"message": {"role": "user", "content": f"msg {i}"}} for i in range(SAVE_INTERVAL)],
+    )
     data = {"session_id": "test", "stop_hook_active": False, "transcript_path": str(transcript)}
 
     # First call blocks
@@ -274,10 +289,10 @@ def test_parse_harness_input_valid():
 def test_stop_hook_oserror_on_last_save_read(tmp_path):
     """When last_save_file has invalid content, falls back to 0."""
     transcript = tmp_path / "t.jsonl"
-    _write_transcript(transcript, [
-        {"message": {"role": "user", "content": f"msg {i}"}}
-        for i in range(SAVE_INTERVAL)
-    ])
+    _write_transcript(
+        transcript,
+        [{"message": {"role": "user", "content": f"msg {i}"}} for i in range(SAVE_INTERVAL)],
+    )
     # Write invalid content to last save file
     (tmp_path / "test_last_save").write_text("not_a_number")
     result = _capture_hook_output(
@@ -291,10 +306,10 @@ def test_stop_hook_oserror_on_last_save_read(tmp_path):
 def test_stop_hook_oserror_on_write(tmp_path):
     """When write to last_save_file fails, hook still outputs correctly."""
     transcript = tmp_path / "t.jsonl"
-    _write_transcript(transcript, [
-        {"message": {"role": "user", "content": f"msg {i}"}}
-        for i in range(SAVE_INTERVAL)
-    ])
+    _write_transcript(
+        transcript,
+        [{"message": {"role": "user", "content": f"msg {i}"}} for i in range(SAVE_INTERVAL)],
+    )
 
     def bad_write_text(*args, **kwargs):
         raise OSError("disk full")
@@ -303,7 +318,11 @@ def test_stop_hook_oserror_on_write(tmp_path):
         with patch.object(Path, "write_text", bad_write_text):
             result = _capture_hook_output(
                 hook_stop,
-                {"session_id": "test", "stop_hook_active": False, "transcript_path": str(transcript)},
+                {
+                    "session_id": "test",
+                    "stop_hook_active": False,
+                    "transcript_path": str(transcript),
+                },
                 state_dir=tmp_path,
             )
     assert result["decision"] == "block"
@@ -356,15 +375,16 @@ def test_run_hook_dispatches_session_start(tmp_path):
 
 def test_run_hook_dispatches_stop(tmp_path):
     transcript = tmp_path / "t.jsonl"
-    _write_transcript(transcript, [
-        {"message": {"role": "user", "content": f"msg {i}"}}
-        for i in range(3)
-    ])
-    stdin_data = json.dumps({
-        "session_id": "run-test",
-        "stop_hook_active": False,
-        "transcript_path": str(transcript),
-    })
+    _write_transcript(
+        transcript, [{"message": {"role": "user", "content": f"msg {i}"}} for i in range(3)]
+    )
+    stdin_data = json.dumps(
+        {
+            "session_id": "run-test",
+            "stop_hook_active": False,
+            "transcript_path": str(transcript),
+        }
+    )
     with patch("sys.stdin", io.StringIO(stdin_data)):
         with patch("mempalace.hooks_cli.STATE_DIR", tmp_path):
             with patch("mempalace.hooks_cli._output") as mock_output:

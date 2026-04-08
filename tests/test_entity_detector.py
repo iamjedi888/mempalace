@@ -40,10 +40,7 @@ def test_extract_candidates_requires_min_frequency():
 
 def test_extract_candidates_finds_multi_word_names():
     # Multi-word names need 3+ occurrences and no stopwords
-    text = (
-        "Claude Code is great. Claude Code rocks. "
-        "Claude Code works. Claude Code rules."
-    )
+    text = "Claude Code is great. Claude Code rocks. Claude Code works. Claude Code rules."
     result = extract_candidates(text)
     assert "Claude Code" in result
 

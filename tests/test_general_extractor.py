@@ -226,7 +226,13 @@ def test_split_into_segments_single_block():
 
 
 def test_all_markers_has_five_types():
-    assert set(ALL_MARKERS.keys()) == {"decision", "preference", "milestone", "problem", "emotional"}
+    assert set(ALL_MARKERS.keys()) == {
+        "decision",
+        "preference",
+        "milestone",
+        "problem",
+        "emotional",
+    }
 
 
 # ── POSITIVE_WORDS / NEGATIVE_WORDS ────────────────────────────────────

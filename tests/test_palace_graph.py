@@ -15,8 +15,8 @@ def _make_fake_collection(metadatas, ids=None):
     col.count.return_value = len(metadatas)
 
     def fake_get(limit=1000, offset=0, include=None):
-        batch_meta = metadatas[offset:offset + limit]
-        batch_ids = ids[offset:offset + limit]
+        batch_meta = metadatas[offset : offset + limit]
+        batch_ids = ids[offset : offset + limit]
         return {"ids": batch_ids, "metadatas": batch_meta}
 
     col.get.side_effect = fake_get
@@ -51,20 +51,34 @@ class TestBuildGraph:
         assert edges == []
 
     def test_single_wing_no_edges(self):
-        col = _make_fake_collection([
-            {"room": "auth", "wing": "wing_code", "hall": "security", "date": "2026-01-01"},
-            {"room": "auth", "wing": "wing_code", "hall": "security", "date": "2026-01-02"},
-        ])
+        col = _make_fake_collection(
+            [
+                {"room": "auth", "wing": "wing_code", "hall": "security", "date": "2026-01-01"},
+                {"room": "auth", "wing": "wing_code", "hall": "security", "date": "2026-01-02"},
+            ]
+        )
         nodes, edges = build_graph(col=col)
         assert "auth" in nodes
         assert nodes["auth"]["count"] == 2
         assert edges == []
 
     def test_multi_wing_creates_edges(self):
-        col = _make_fake_collection([
-            {"room": "chromadb", "wing": "wing_code", "hall": "databases", "date": "2026-01-01"},
-            {"room": "chromadb", "wing": "wing_project", "hall": "databases", "date": "2026-01-02"},
-        ])
+        col = _make_fake_collection(
+            [
+                {
+                    "room": "chromadb",
+                    "wing": "wing_code",
+                    "hall": "databases",
+                    "date": "2026-01-01",
+                },
+                {
+                    "room": "chromadb",
+                    "wing": "wing_project",
+                    "hall": "databases",
+                    "date": "2026-01-02",
+                },
+            ]
+        )
         nodes, edges = build_graph(col=col)
         assert "chromadb" in nodes
         assert len(edges) == 1
@@ -73,24 +87,30 @@ class TestBuildGraph:
         assert edges[0]["hall"] == "databases"
 
     def test_general_room_excluded(self):
-        col = _make_fake_collection([
-            {"room": "general", "wing": "wing_code", "hall": "misc", "date": ""},
-        ])
+        col = _make_fake_collection(
+            [
+                {"room": "general", "wing": "wing_code", "hall": "misc", "date": ""},
+            ]
+        )
         nodes, edges = build_graph(col=col)
         assert "general" not in nodes
 
     def test_missing_wing_excluded(self):
-        col = _make_fake_collection([
-            {"room": "orphan", "wing": "", "hall": "misc", "date": ""},
-        ])
+        col = _make_fake_collection(
+            [
+                {"room": "orphan", "wing": "", "hall": "misc", "date": ""},
+            ]
+        )
         nodes, edges = build_graph(col=col)
         assert "orphan" not in nodes
 
     def test_dates_capped_at_five(self):
-        col = _make_fake_collection([
-            {"room": "busy", "wing": "w", "hall": "h", "date": f"2026-01-{i:02d}"}
-            for i in range(1, 10)
-        ])
+        col = _make_fake_collection(
+            [
+                {"room": "busy", "wing": "w", "hall": "h", "date": f"2026-01-{i:02d}"}
+                for i in range(1, 10)
+            ]
+        )
         nodes, _ = build_graph(col=col)
         assert len(nodes["busy"]["dates"]) <= 5
 
@@ -100,11 +120,13 @@ class TestBuildGraph:
 
 class TestTraverse:
     def _build_col(self):
-        return _make_fake_collection([
-            {"room": "auth", "wing": "wing_code", "hall": "security", "date": "2026-01-01"},
-            {"room": "login", "wing": "wing_code", "hall": "security", "date": "2026-01-01"},
-            {"room": "deploy", "wing": "wing_ops", "hall": "infra", "date": "2026-01-01"},
-        ])
+        return _make_fake_collection(
+            [
+                {"room": "auth", "wing": "wing_code", "hall": "security", "date": "2026-01-01"},
+                {"room": "login", "wing": "wing_code", "hall": "security", "date": "2026-01-01"},
+                {"room": "deploy", "wing": "wing_ops", "hall": "infra", "date": "2026-01-01"},
+            ]
+        )
 
     def test_traverse_known_room(self):
         col = self._build_col()
@@ -135,11 +157,13 @@ class TestTraverse:
 
 class TestFindTunnels:
     def _build_tunnel_col(self):
-        return _make_fake_collection([
-            {"room": "chromadb", "wing": "wing_code", "hall": "db", "date": "2026-01-01"},
-            {"room": "chromadb", "wing": "wing_project", "hall": "db", "date": "2026-01-02"},
-            {"room": "auth", "wing": "wing_code", "hall": "security", "date": "2026-01-01"},
-        ])
+        return _make_fake_collection(
+            [
+                {"room": "chromadb", "wing": "wing_code", "hall": "db", "date": "2026-01-01"},
+                {"room": "chromadb", "wing": "wing_project", "hall": "db", "date": "2026-01-02"},
+                {"room": "auth", "wing": "wing_code", "hall": "security", "date": "2026-01-01"},
+            ]
+        )
 
     def test_find_all_tunnels(self):
         col = self._build_tunnel_col()
@@ -176,11 +200,13 @@ class TestGraphStats:
         assert stats["total_edges"] == 0
 
     def test_stats_with_data(self):
-        col = _make_fake_collection([
-            {"room": "chromadb", "wing": "wing_code", "hall": "db", "date": "2026-01-01"},
-            {"room": "chromadb", "wing": "wing_project", "hall": "db", "date": "2026-01-02"},
-            {"room": "auth", "wing": "wing_code", "hall": "security", "date": "2026-01-01"},
-        ])
+        col = _make_fake_collection(
+            [
+                {"room": "chromadb", "wing": "wing_code", "hall": "db", "date": "2026-01-01"},
+                {"room": "chromadb", "wing": "wing_project", "hall": "db", "date": "2026-01-02"},
+                {"room": "auth", "wing": "wing_code", "hall": "security", "date": "2026-01-01"},
+            ]
+        )
         stats = graph_stats(col=col)
         assert stats["total_rooms"] == 2
         assert stats["tunnel_rooms"] == 1
