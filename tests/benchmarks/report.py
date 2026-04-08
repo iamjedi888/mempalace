@@ -8,7 +8,6 @@ conftest.py pytest_terminal_summary hook writes the collected results.
 import json
 import os
 import tempfile
-from datetime import datetime
 
 
 RESULTS_FILE = os.path.join(tempfile.gettempdir(), "mempalace_bench_results.json")

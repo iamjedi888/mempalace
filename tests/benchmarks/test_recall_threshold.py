@@ -8,7 +8,6 @@ wing+room to find the actual embedding model limit.
 
 import hashlib
 import os
-import time
 from datetime import datetime
 
 import chromadb

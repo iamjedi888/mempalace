@@ -8,7 +8,6 @@ Targets the highest-risk code paths:
   - Layer1.generate() (fetches all drawers)
 """
 
-import time
 import tracemalloc
 
 import pytest

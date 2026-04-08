@@ -8,12 +8,10 @@ Measures mining performance at scale:
   - Re-ingest skip overhead (finding #11: file_already_mined check)
 """
 
-import os
 import time
 
 import chromadb
 import pytest
-import yaml
 
 from tests.benchmarks.data_generator import PalaceDataGenerator
 from tests.benchmarks.report import record_metric

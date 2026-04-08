@@ -5,7 +5,6 @@ Tests MemoryStack.wake_up(), Layer1.generate(), and Layer2/L3
 at scale. Layer1 has the same unbounded col.get() as tool_status.
 """
 
-import os
 import time
 
 import pytest
@@ -168,7 +167,7 @@ class TestLayer2Retrieval:
         latencies = []
         for _ in range(10):
             start = time.perf_counter()
-            text = layer.retrieve(wing=wing, n_results=10)
+            layer.retrieve(wing=wing, n_results=10)
             elapsed_ms = (time.perf_counter() - start) * 1000
             latencies.append(elapsed_ms)
 
@@ -198,7 +197,7 @@ class TestLayer3Search:
         latencies = []
         for q in queries:
             start = time.perf_counter()
-            text = stack.search(q, n_results=5)
+            stack.search(q, n_results=5)
             elapsed_ms = (time.perf_counter() - start) * 1000
             latencies.append(elapsed_ms)
 

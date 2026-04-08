@@ -56,7 +56,6 @@ class TestQueryEntityLatency:
         from mempalace.knowledge_graph import KnowledgeGraph
 
         kg = KnowledgeGraph(db_path=str(tmp_path / "kg.sqlite3"))
-        gen = PalaceDataGenerator(seed=42)
 
         # Create a hub entity connected to many others
         kg.add_entity("Hub", "person")
@@ -72,7 +71,7 @@ class TestQueryEntityLatency:
         latencies = []
         for _ in range(20):
             start = time.perf_counter()
-            result = kg.query_entity("Hub")
+            kg.query_entity("Hub")
             elapsed_ms = (time.perf_counter() - start) * 1000
             latencies.append(elapsed_ms)
 
@@ -106,7 +105,7 @@ class TestTimelinePerformance:
         latencies = []
         for _ in range(10):
             start = time.perf_counter()
-            result = kg.timeline()
+            kg.timeline()
             elapsed_ms = (time.perf_counter() - start) * 1000
             latencies.append(elapsed_ms)
 
@@ -143,8 +142,6 @@ class TestTemporalQueryAccuracy:
 
         # Query Alice as of March 2024 — should find ProjectA
         result_march = kg.query_entity("Alice", as_of="2024-03-15")
-        project_names = [r.get("object") or r.get("name", "") for r in result_march] if isinstance(result_march, list) else []
-
         # Query Alice as of September 2024 — should find ProjectB
         result_sept = kg.query_entity("Alice", as_of="2024-09-15")
 
@@ -161,7 +158,6 @@ class TestSQLiteConcurrentAccess:
         from mempalace.knowledge_graph import KnowledgeGraph
 
         kg = KnowledgeGraph(db_path=str(tmp_path / "kg.sqlite3"))
-        gen = PalaceDataGenerator(seed=42)
 
         # Pre-create entities
         for i in range(100):
@@ -276,7 +272,7 @@ class TestKGStats:
         latencies = []
         for _ in range(10):
             start = time.perf_counter()
-            result = kg.stats()
+            kg.stats()
             elapsed_ms = (time.perf_counter() - start) * 1000
             latencies.append(elapsed_ms)
 

@@ -216,7 +216,7 @@ class TestSearchNResultsScaling:
         latencies = []
         for _ in range(5):
             start = time.perf_counter()
-            result = search_memories(
+            search_memories(
                 "authentication middleware", palace_path=palace_path, n_results=n_results
             )
             latencies.append((time.perf_counter() - start) * 1000)

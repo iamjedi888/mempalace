@@ -14,7 +14,7 @@ import time
 import chromadb
 import pytest
 
-from tests.benchmarks.data_generator import PalaceDataGenerator, SCALE_CONFIGS
+from tests.benchmarks.data_generator import PalaceDataGenerator
 from tests.benchmarks.report import record_metric
 
 
