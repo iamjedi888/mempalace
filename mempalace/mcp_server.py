@@ -717,17 +717,31 @@ TOOLS = {
 }
 
 
+SUPPORTED_PROTOCOL_VERSIONS = [
+    "2025-11-25",
+    "2025-06-18",
+    "2025-03-26",
+    "2024-11-05",
+]
+
+
 def handle_request(request):
     method = request.get("method", "")
     params = request.get("params", {})
     req_id = request.get("id")
 
     if method == "initialize":
+        client_version = params.get("protocolVersion", SUPPORTED_PROTOCOL_VERSIONS[-1])
+        negotiated = (
+            client_version
+            if client_version in SUPPORTED_PROTOCOL_VERSIONS
+            else SUPPORTED_PROTOCOL_VERSIONS[0]
+        )
         return {
             "jsonrpc": "2.0",
             "id": req_id,
             "result": {
-                "protocolVersion": "2024-11-05",
+                "protocolVersion": negotiated,
                 "capabilities": {"tools": {}},
                 "serverInfo": {"name": "mempalace", "version": __version__},
             },
