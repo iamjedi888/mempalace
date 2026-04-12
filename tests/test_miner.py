@@ -262,6 +262,32 @@ def test_file_already_mined_check_mtime():
         shutil.rmtree(tmpdir, ignore_errors=True)
 
 
+def test_mine_dry_run_with_tiny_file_no_crash():
+    """Dry-run must not crash when process_file returns 0 drawers (room was None)."""
+    tmpdir = tempfile.mkdtemp()
+    try:
+        project_root = Path(tmpdir).resolve()
+
+        # One normal file and one that falls below MIN_CHUNK_SIZE
+        write_file(project_root / "good.py", "def main():\n    print('hello world')\n" * 20)
+        write_file(project_root / "tiny.txt", "x")
+
+        with open(project_root / "mempalace.yaml", "w") as f:
+            yaml.dump(
+                {
+                    "wing": "test_project",
+                    "rooms": [{"name": "general", "description": "General"}],
+                },
+                f,
+            )
+
+        palace_path = project_root / "palace"
+        # Should not raise TypeError on the summary print
+        mine(str(project_root), str(palace_path), dry_run=True)
+    finally:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+
+
 def test_status_missing_palace_does_not_create_empty_collection(tmp_path, capsys):
     palace_path = tmp_path / "missing-palace"
 
